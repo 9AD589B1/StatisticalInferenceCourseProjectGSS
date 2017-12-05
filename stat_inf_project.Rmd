@@ -1,0 +1,140 @@
+---
+title: "Statistical Inference with the GSS Data"
+author: "David Kochar"
+date: '`r Sys.Date()`'
+output: 
+  html_document: 
+    fig_height: 4
+    highlight: pygments
+    theme: spacelab
+---
+
+##Synopsis
+
+This analysis performs exploratory data anlaysis and statiscal inferance with a General Social Survey (GSS) dataset.
+
+## Setup
+
+We will first prepare the workspace environment by setting global options
+
+### Set Global Options
+
+```{r setupknitr}
+#Install Knitr pckage if necessary and load Knitr library
+list.of.packages <- c("knitr")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages, repos = "http://cran.us.r-project.org")
+suppressWarnings ( suppressMessages ( library ( knitr ) ) )
+knitr::opts_chunk$set(fig.width=8, fig.height=4, fig.path='figures/DataAnalysisProject_', echo=TRUE, warning=FALSE, message=FALSE)
+#Clear variables
+rm ( list = ls ( all = TRUE ) )
+#Get and set working directory
+setwd ( getwd ( ) )
+```
+
+### Load Packages
+
+Install and load required libraries if neccessary.
+
+```{r load-packages}
+#Check installed status of requried packages, and install if necessary
+list.of.packages <-
+c("dplyr", "ggplot2", "scales", "readxl", "kableExtra")
+new.packages <-
+list.of.packages[!(list.of.packages %in% installed.packages()[, "Package"])]
+if (length(new.packages))
+install.packages(new.packages, repos = "http://cran.us.r-project.org")
+suppressWarnings (suppressMessages (library (dplyr)))
+suppressWarnings (suppressMessages (library (ggplot2)))
+suppressWarnings (suppressMessages (library (scales)))
+suppressWarnings (suppressMessages (library (readxl)))
+suppressWarnings (suppressMessages (library (kableExtra)))
+```
+
+### Load Data
+
+Load the data set. 
+
+```{r load-data}
+load (
+  url (
+  "https://d3c33hcgiwev3.cloudfront.net/_5db435f06000e694f6050a2d43fc7be3_gss.Rdata?Expires=1512604800&Signature=RrxvDxYwCH6nUMgx8MmXy6iXon43J0xAiIbw1usFdnW77kLM97Rh7-dyF767sTbj9CID6JSqcbSDeh4QWxMeDhDnz4hfGh~LMM3BcxQhE8e3Lg5unWGpQTvx43tq4dhkaDx6ZPv78CJX1rOvxMPyR9pZtl2XDVwwHm0z6w-VWxs_&Key-Pair-Id=APKAJLTNE6QMUY6HBC5A"
+  )
+  )
+```
+
+
+
+* * *
+
+## Part 1: Data
+
+The vast majority of GSS data is obtained in face-to-face interviews. Computer-assisted personal interviewing (CAPI) began in the 2002 GSS. Under some conditions when it has proved difficult to arrange an in-person interview with a sampled respondent, GSS interviews may be conducted by telephone.
+[@http://gss.norc.org/Pages/Faq.aspx]
+
+The target population of the GSS is adults (18+) living in households in the United States. The GSS sample is drawn using an area probability design that randomly selects respondents in households across the United States to take part in the survey. Respondents that become part of the GSS sample are from a mix of urban, suburban, and rural geographic areas. Participation in the study is strictly voluntary. However, because only about a few thousand respondents are interviewed in the main study, every respondent selected is very important to the results.
+[@https://en.wikipedia.org/wiki/General_Social_Survey]
+
+The scope of inference for this data is limited to generalizability because it is an observational study, i.e. we cannot determine causality as no random assignment of participants occured.
+
+* * *
+
+## Part 2: Research Question
+
+We will research if there is a statistically significant difference between income based on political views. 
+
+* * *
+
+## Part 3: Exploratory Data Analysis
+
+For our Exploratory Data Analysis, poltical views (variable "polviews") will be our explantory variable, and income ("coninc") will be our response variable.
+
+Let's get a feel for our explanatory variable, "polviews," by determining the unique values.
+
+```{r distinct-explanatory}
+unique (gss$polviews)
+```
+
+
+There are 7 unique political views, excluding NA values.
+
+Let's visualize the distribution of income per poltical view by using box plots. Note we will exclude NAs.
+
+```{r plot-boxplot}
+ggplot(data = subset(gss,!is.na(polviews) &
+                       coninc), aes(x = polviews, y = coninc)) +
+                       geom_boxplot(fill = "#56B4E9") +
+                       labs(title = "Income by Political Views", x = "Political View", y = "Income") +
+                       scale_y_continuous(labels = dollar, breaks = seq(0, 200000, by = 25000))
+```
+
+We can see that conservative views appear to have higher median incomes, but more variability. Also, it appears that income decreases as political views become more moderate.
+
+Let's calculate summary statistics.
+
+```{r summary-stats}
+GSSSummary <- gss %>%
+  filter(polviews != "NA") %>%
+  group_by (polviews) %>%
+  summarise (
+  MinIncome = min(coninc, na.rm = TRUE),
+  MaxIncome = max(coninc, na.rm = TRUE),
+  AverageIncome = mean(coninc, na.rm = TRUE),
+  MedianIncome = median(coninc, na.rm = TRUE),
+  IncomeIQR = IQR(coninc, na.rm = TRUE)
+  ) %>%
+  arrange (desc(AverageIncome))
+  
+  #GSSSummary
+  suppressWarnings (suppressMessages (library (kableExtra)))
+  GSSSummary %>%
+  kable("html") %>%
+  kable_styling()
+```
+
+We do see that "Slightly Conservative" has the most variability, and also the highest mean and median income. Let's now determine if there is any statistical income difference between the political views.
+
+* * *
+
+## Part 4: Inference
+
