@@ -4,7 +4,7 @@ author: "David Kochar"
 date: '`r Sys.Date()`'
 output: 
   html_document: 
-    fig_height: 4
+    keep_md: true
     highlight: pygments
     theme: spacelab
 ---
@@ -81,7 +81,7 @@ The scope of inference for this data is limited to generalizability because it i
 
 ## Part 2: Research Question
 
-We will research if there is a statistically significant difference between income based on political views. 
+We will research if there is a statistically significant difference between income based on political views. This is of interest because political alignment is often indicative of fiduciary alignment, which should translate to earnings.
 
 * * *
 
@@ -105,7 +105,8 @@ ggplot(data = subset(gss,!is.na(polviews) &
                        coninc), aes(x = polviews, y = coninc)) +
                        geom_boxplot(fill = "#56B4E9") +
                        labs(title = "Income by Political Views", x = "Political View", y = "Income") +
-                       scale_y_continuous(labels = dollar, breaks = seq(0, 200000, by = 25000))
+                       #format y-scale
+                       scale_y_continuous(labels = dollar, breaks = seq(0, 200000, by = 25000)) 
 ```
 
 We can see that conservative views appear to have higher median incomes, but more variability. Also, it appears that income decreases as political views become more moderate.
@@ -113,10 +114,12 @@ We can see that conservative views appear to have higher median incomes, but mor
 Let's calculate summary statistics.
 
 ```{r summary-stats}
+#Compute summary stats
 GSSSummary <- gss %>%
   filter(polviews != "NA") %>%
   group_by (polviews) %>%
   summarise (
+  Respondents = n (),
   MinIncome = min(coninc, na.rm = TRUE),
   MaxIncome = max(coninc, na.rm = TRUE),
   AverageIncome = mean(coninc, na.rm = TRUE),
@@ -125,7 +128,7 @@ GSSSummary <- gss %>%
   ) %>%
   arrange (desc(AverageIncome))
   
-  #GSSSummary
+  #Create summary table
   suppressWarnings (suppressMessages (library (kableExtra)))
   GSSSummary %>%
   kable("html") %>%
@@ -134,7 +137,33 @@ GSSSummary <- gss %>%
 
 We do see that "Slightly Conservative" has the most variability, and also the highest mean and median income. Let's now determine if there is any statistical income difference between the political views.
 
+Let's also plot histograms to gauge normality
+
+```{r histogram}
+ggplot(data = subset(gss, !is.na(polviews) &
+                       coninc), aes(x = coninc)) + geom_histogram(binwidth = 10000) + 
+                       facet_grid( ~ polviews) + theme_bw()
+```
+
+
 * * *
 
 ## Part 4: Inference
+
+We will use one-way ANOVA for our test of statistical significance.
+
+```{r anova}
+GSSAOV <-
+  aov(coninc ~ polviews, data = subset(gss, !is.na(polviews) &
+  coninc)) #Calculate ANOVA
+  summary(GSSAOV)
+```
+
+
+Also, we will evaulate the paired combinations of political views with Tukey multiple pairwise-comparisons
+
+
+```{r tukey}
+TukeyHSD(GSSAOV)
+```
 
