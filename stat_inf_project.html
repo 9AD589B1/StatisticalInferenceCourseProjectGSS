@@ -11,7 +11,7 @@
 
 <meta name="author" content="David Kochar" />
 
-<meta name="date" content="2017-12-06" />
+<meta name="date" content="2017-12-07" />
 
 <title>Statistical Inference with the GSS Data</title>
 
@@ -147,7 +147,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">Statistical Inference with the GSS Data</h1>
 <h4 class="author"><em>David Kochar</em></h4>
-<h4 class="date"><em>2017-12-06</em></h4>
+<h4 class="date"><em>2017-12-07</em></h4>
 
 </div>
 
@@ -444,6 +444,13 @@ Extremely Liberal
 <div id="part-4-inference" class="section level2">
 <h2>Part 4: Inference</h2>
 <p>As mentioned, we will use a Kruskal-Wallis Test for statistical significance. Also, we will calculate pairwise comparisions with Wilcoxon Rank Sum Tests.</p>
+<p>The assumptions for the Kruskal-Wallis Test are:</p>
+<ol style="list-style-type: decimal">
+<li>We assume that the samples drawn from the population are random</li>
+<li>We also assume that the observations are independent of each other</li>
+<li>The measurement scale for the dependent variable should be at least ordinal</li>
+</ol>
+<p>Based on the GSS methodology, assumptions 1 &amp; 2 are met. our income dependent variable is on an ordinal scale, so we also meet assumption 3.</p>
 <p>First, let’s create a subset of the data to remove NA values.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gsssubset &lt;-<span class="st"> </span><span class="kw">subset</span>(gss,<span class="op">!</span><span class="kw">is.na</span>(polviews) <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span><span class="kw">is.na</span>(coninc))</code></pre></div>
 <p>Now, we will perform the Kruskal-Wallis test using a 0.05 significance level</p>

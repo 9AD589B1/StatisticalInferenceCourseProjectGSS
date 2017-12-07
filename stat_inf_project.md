@@ -1,7 +1,7 @@
 ---
 title: "Statistical Inference with the GSS Data"
 author: "David Kochar"
-date: '2017-12-06'
+date: '2017-12-07'
 output: 
   html_document: 
     keep_md: true
@@ -239,6 +239,14 @@ We can see our income distribution is right-skewed for each political view. Sinc
 ## Part 4: Inference
 
 As mentioned, we will use a Kruskal-Wallis Test for statistical significance. Also, we will calculate pairwise comparisions with Wilcoxon Rank Sum Tests.
+
+The assumptions for the Kruskal-Wallis Test are:
+
+1. We assume that the samples drawn from the population are random
+2. We also assume that the observations are independent of each other
+3. The measurement scale for the dependent variable should be at least ordinal
+
+Based on the GSS methodology, assumptions 1 & 2 are met. our income dependent variable is on an ordinal scale, so we also meet assumption 3.
 
 First, let's create a subset of the data to remove NA values.
 
