@@ -1,7 +1,7 @@
 ---
 title: "Statistical Inference with the GSS Data"
 author: "David Kochar"
-date: '2017-12-05'
+date: '2017-12-06'
 output: 
   html_document: 
     keep_md: true
@@ -15,7 +15,7 @@ This analysis performs exploratory data anlaysis and statiscal inferance with a 
 
 ## Setup
 
-We will first prepare the workspace environment by setting global options
+We will first prepare the workspace environment by setting global options.
 
 ### Set Global Options
 
@@ -41,7 +41,7 @@ Install and load required libraries if neccessary.
 ```r
 #Check installed status of requried packages, and install if necessary
 list.of.packages <-
-c("dplyr", "ggplot2", "scales", "readxl", "kableExtra")
+c("dplyr", "ggplot2", "scales", "kableExtra")
 new.packages <-
 list.of.packages[!(list.of.packages %in% installed.packages()[, "Package"])]
 if (length(new.packages))
@@ -49,7 +49,6 @@ install.packages(new.packages, repos = "http://cran.us.r-project.org")
 suppressWarnings (suppressMessages (library (dplyr)))
 suppressWarnings (suppressMessages (library (ggplot2)))
 suppressWarnings (suppressMessages (library (scales)))
-suppressWarnings (suppressMessages (library (readxl)))
 suppressWarnings (suppressMessages (library (kableExtra)))
 ```
 
@@ -59,11 +58,7 @@ Load the data set.
 
 
 ```r
-load (
-  url (
-  "https://d3c33hcgiwev3.cloudfront.net/_5db435f06000e694f6050a2d43fc7be3_gss.Rdata?Expires=1512604800&Signature=RrxvDxYwCH6nUMgx8MmXy6iXon43J0xAiIbw1usFdnW77kLM97Rh7-dyF767sTbj9CID6JSqcbSDeh4QWxMeDhDnz4hfGh~LMM3BcxQhE8e3Lg5unWGpQTvx43tq4dhkaDx6ZPv78CJX1rOvxMPyR9pZtl2XDVwwHm0z6w-VWxs_&Key-Pair-Id=APKAJLTNE6QMUY6HBC5A"
-  )
-  )
+load (url ("https://d3c33hcgiwev3.cloudfront.net/_5db435f06000e694f6050a2d43fc7be3_gss.Rdata?Expires=1512777600&Signature=fSqFvFcwuQ6KQCYc-sGFX42wym9hhfZTBDUWr8v0wvLpkDdt6rCL1zmoefY7U11h9Q5TVJBjQJyBUvqWvIfIaWkwJVa6euAUE3IqzcAmbL67gNcDOqaNomiXtjpRsPeWgfmIk-p7MFAMpx-WZrThP1AkzjFgst5uo03rm9K8r~o_&Key-Pair-Id=APKAJLTNE6QMUY6HBC5A"))
 ```
 
 
@@ -84,13 +79,14 @@ The scope of inference for this data is limited to generalizability because it i
 
 ## Part 2: Research Question
 
-We will research if there is a statistically significant difference between income based on political views. This is of interest because political alignment is often indicative of fiduciary alignment, which should translate to earnings.
+We will research if there is a statistically significant difference between different poltical view's family income. This is of interest because political alignment is indicative of personality, where conservatives tend to be more conscientiousness, which should be a predictor of higher earnings potential.
+[@https://www.economist.com/blogs/democracyinamerica/2012/05/personality-and-polarisation]
 
 * * *
 
 ## Part 3: Exploratory Data Analysis
 
-For our Exploratory Data Analysis, poltical views (variable "polviews") will be our explantory variable, and income ("coninc") will be our response variable.
+For our Exploratory Data Analysis, poltical views (variable "polviews") will be our explantory variable, and "total family income in constant dollars" (variable "coninc") will be our response variable.
 
 Let's get a feel for our explanatory variable, "polviews," by determining the unique values.
 
@@ -106,15 +102,13 @@ unique (gss$polviews)
 ## 7 Levels: Extremely Liberal Liberal Slightly Liberal ... Extrmly Conservative
 ```
 
-
 There are 7 unique political views, excluding NA values.
 
 Let's visualize the distribution of income per poltical view by using box plots. Note we will exclude NAs.
 
 
 ```r
-ggplot(data = subset(gss,!is.na(polviews) &
-                       coninc), aes(x = polviews, y = coninc)) +
+ggplot(data = subset(gss,!is.na(polviews) & !is.na(coninc)), aes(x = polviews, y = coninc)) +
                        geom_boxplot(fill = "#56B4E9") +
                        labs(title = "Income by Political Views", x = "Political View", y = "Income") +
                        #format y-scale
@@ -227,101 +221,80 @@ GSSSummary <- gss %>%
 </tbody>
 </table>
 
-We do see that "Slightly Conservative" has the most variability, and also the highest mean and median income. Let's now determine if there is any statistical income difference between the political views.
+We do see that "Slightly Conservative" has the most variability, and also the highest mean and median income. Also, we see the "moderate" view has the most respondents. Let's now determine if there is any statistical income difference between the political views.
 
-Let's also plot histograms to gauge normality
+Let's also gauge normality with a quantile-quantile plot.
 
 
 ```r
-ggplot(data = subset(gss, !is.na(polviews) &
-                       coninc), aes(x = coninc)) + geom_histogram(binwidth = 10000) + 
-                       facet_grid( ~ polviews) + theme_bw()
+qplot(sample = coninc, data = subset(gss, !is.na(polviews) & !is.na(coninc)), color=polviews)
 ```
 
-![](figures/DataAnalysisProject_histogram-1.png)<!-- -->
+![](figures/DataAnalysisProject_qqpot-1.png)<!-- -->
 
+We can see our income distribution is right-skewed for each political view. Since we are comparing more than two groups, and we want to mitigate the skewness impact, we will use a Kruskal-Wallis Test.
 
 * * *
 
 ## Part 4: Inference
 
-We will use one-way ANOVA for our test of statistical significance.
+As mentioned, we will use a Kruskal-Wallis Test for statistical significance. Also, we will calculate pairwise comparisions with Wilcoxon Rank Sum Tests.
+
+First, let's create a subset of the data to remove NA values.
 
 
 ```r
-GSSAOV <-
-  aov(coninc ~ polviews, data = subset(gss, !is.na(polviews) &
-  coninc)) #Calculate ANOVA
-  summary(GSSAOV)
+gsssubset <- subset(gss,!is.na(polviews) & !is.na(coninc))
 ```
 
-```
-##                Df    Sum Sq   Mean Sq F value Pr(>F)    
-## polviews        6 5.637e+11 9.395e+10    72.8 <2e-16 ***
-## Residuals   43330 5.592e+13 1.290e+09                   
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-```
-
-
-Also, we will evaulate the paired combinations of political views with Tukey multiple pairwise-comparisons
-
+Now, we will perform the Kruskal-Wallis test using a 0.05 significance level
 
 
 ```r
-TukeyHSD(GSSAOV)
+kruskal.test(coninc ~ polviews, data = gsssubset)
 ```
 
 ```
-##   Tukey multiple comparisons of means
-##     95% family-wise confidence level
 ## 
-## Fit: aov(formula = coninc ~ polviews, data = subset(gss, !is.na(polviews) & coninc))
+## 	Kruskal-Wallis rank sum test
 ## 
-## $polviews
-##                                                  diff         lwr
-## Liberal-Extremely Liberal                   5111.8047   1738.3401
-## Slightly Liberal-Extremely Liberal          6109.4554   2770.1648
-## Moderate-Extremely Liberal                  2953.2734   -188.4999
-## Slightly Conservative-Extremely Liberal    11560.1473   8275.9745
-## Conservative-Extremely Liberal             10590.6043   7278.1949
-## Extrmly Conservative-Extremely Liberal      3114.1004  -1116.4437
-## Slightly Liberal-Liberal                     997.6507  -1037.3977
-## Moderate-Liberal                           -2158.5312  -3850.0690
-## Slightly Conservative-Liberal               6448.3427   4505.0589
-## Conservative-Liberal                        5478.7997   3488.1674
-## Extrmly Conservative-Liberal               -1997.7043  -5297.4109
-## Moderate-Slightly Liberal                  -3156.1819  -4778.4946
-## Slightly Conservative-Slightly Liberal      5450.6920   3567.3571
-## Conservative-Slightly Liberal               4481.1490   2548.9959
-## Extrmly Conservative-Slightly Liberal      -2995.3550  -6260.1157
-## Slightly Conservative-Moderate              8606.8739   7101.2749
-## Conservative-Moderate                       7637.3309   6071.0955
-## Extrmly Conservative-Moderate                160.8269  -2901.6134
-## Conservative-Slightly Conservative          -969.5430  -2804.7937
-## Extrmly Conservative-Slightly Conservative -8446.0470 -11654.4098
-## Extrmly Conservative-Conservative          -7476.5040 -10713.7647
-##                                                   upr     p adj
-## Liberal-Extremely Liberal                   8485.2692 0.0001605
-## Slightly Liberal-Extremely Liberal          9448.7459 0.0000014
-## Moderate-Extremely Liberal                  6095.0468 0.0815302
-## Slightly Conservative-Extremely Liberal    14844.3202 0.0000000
-## Conservative-Extremely Liberal             13903.0138 0.0000000
-## Extrmly Conservative-Extremely Liberal      7344.6445 0.3117770
-## Slightly Liberal-Liberal                    3032.6991 0.7769970
-## Moderate-Liberal                            -466.9934 0.0031958
-## Slightly Conservative-Liberal               8391.6265 0.0000000
-## Conservative-Liberal                        7469.4319 0.0000000
-## Extrmly Conservative-Liberal                1302.0023 0.5582672
-## Moderate-Slightly Liberal                  -1533.8692 0.0000002
-## Slightly Conservative-Slightly Liberal      7334.0269 0.0000000
-## Conservative-Slightly Liberal               6413.3020 0.0000000
-## Extrmly Conservative-Slightly Liberal        269.4057 0.0969133
-## Slightly Conservative-Moderate             10112.4729 0.0000000
-## Conservative-Moderate                       9203.5663 0.0000000
-## Extrmly Conservative-Moderate               3223.2672 0.9999988
-## Conservative-Slightly Conservative           865.7077 0.7095292
-## Extrmly Conservative-Slightly Conservative -5237.6841 0.0000000
-## Extrmly Conservative-Conservative          -4239.2432 0.0000000
+## data:  coninc by polviews
+## Kruskal-Wallis chi-squared = 466.68, df = 6, p-value < 2.2e-16
 ```
 
+As the p-value is much less than the significance level 0.05, we can conclude that there are significant differences between poltical views when comparing family income.
+
+Next, we will evaulate the paired combinations of political views with Pairwise Wilcoxon Rank Sum Tests, using Bonferroni correction.
+
+
+```r
+pairwise.wilcox.test(gsssubset$coninc, gsssubset$polviews, p.adjust.method = "bonferroni")
+```
+
+```
+## 
+## 	Pairwise comparisons using Wilcoxon rank sum test 
+## 
+## data:  gsssubset$coninc and gsssubset$polviews 
+## 
+##                       Extremely Liberal Liberal Slightly Liberal Moderate
+## Liberal               1.2e-06           -       -                -       
+## Slightly Liberal      1.1e-11           0.08582 -                -       
+## Moderate              1.5e-06           1.00000 6.7e-06          -       
+## Slightly Conservative < 2e-16           < 2e-16 < 2e-16          < 2e-16 
+## Conservative          < 2e-16           < 2e-16 2.7e-08          < 2e-16 
+## Extrmly Conservative  0.28242           0.37118 0.00063          0.99836 
+##                       Slightly Conservative Conservative
+## Liberal               -                     -           
+## Slightly Liberal      -                     -           
+## Moderate              -                     -           
+## Slightly Conservative -                     -           
+## Conservative          0.10929               -           
+## Extrmly Conservative  < 2e-16               3.9e-13     
+## 
+## P value adjustment method: bonferroni
+```
+
+We can see multiple indications of signifance between groups. What's compelling is that significant differences don't exist between "moderate" and "liberal," or "moderate" and "conservative" but the two "slightly" based views do have signifance when compared to "moderate."
+
+Furthermore, we do see significant differences between liberal and conservative alignments, but interestingly enough, not between the extreme ends of the spectrum.

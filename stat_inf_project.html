@@ -11,7 +11,7 @@
 
 <meta name="author" content="David Kochar" />
 
-<meta name="date" content="2017-12-05" />
+<meta name="date" content="2017-12-06" />
 
 <title>Statistical Inference with the GSS Data</title>
 
@@ -147,7 +147,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">Statistical Inference with the GSS Data</h1>
 <h4 class="author"><em>David Kochar</em></h4>
-<h4 class="date"><em>2017-12-05</em></h4>
+<h4 class="date"><em>2017-12-06</em></h4>
 
 </div>
 
@@ -158,7 +158,7 @@ $(document).ready(function () {
 </div>
 <div id="setup" class="section level2">
 <h2>Setup</h2>
-<p>We will first prepare the workspace environment by setting global options</p>
+<p>We will first prepare the workspace environment by setting global options.</p>
 <div id="set-global-options" class="section level3">
 <h3>Set Global Options</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Install Knitr pckage if necessary and load Knitr library</span>
@@ -177,7 +177,7 @@ knitr<span class="op">::</span>opts_chunk<span class="op">$</span><span class="k
 <p>Install and load required libraries if neccessary.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Check installed status of requried packages, and install if necessary</span>
 list.of.packages &lt;-
-<span class="kw">c</span>(<span class="st">&quot;dplyr&quot;</span>, <span class="st">&quot;ggplot2&quot;</span>, <span class="st">&quot;scales&quot;</span>, <span class="st">&quot;readxl&quot;</span>, <span class="st">&quot;kableExtra&quot;</span>)
+<span class="kw">c</span>(<span class="st">&quot;dplyr&quot;</span>, <span class="st">&quot;ggplot2&quot;</span>, <span class="st">&quot;scales&quot;</span>, <span class="st">&quot;kableExtra&quot;</span>)
 new.packages &lt;-
 list.of.packages[<span class="op">!</span>(list.of.packages <span class="op">%in%</span><span class="st"> </span><span class="kw">installed.packages</span>()[, <span class="st">&quot;Package&quot;</span>])]
 <span class="cf">if</span> (<span class="kw">length</span>(new.packages))
@@ -185,17 +185,12 @@ list.of.packages[<span class="op">!</span>(list.of.packages <span class="op">%in
 <span class="kw">suppressWarnings</span> (<span class="kw">suppressMessages</span> (<span class="kw">library</span> (dplyr)))
 <span class="kw">suppressWarnings</span> (<span class="kw">suppressMessages</span> (<span class="kw">library</span> (ggplot2)))
 <span class="kw">suppressWarnings</span> (<span class="kw">suppressMessages</span> (<span class="kw">library</span> (scales)))
-<span class="kw">suppressWarnings</span> (<span class="kw">suppressMessages</span> (<span class="kw">library</span> (readxl)))
 <span class="kw">suppressWarnings</span> (<span class="kw">suppressMessages</span> (<span class="kw">library</span> (kableExtra)))</code></pre></div>
 </div>
 <div id="load-data" class="section level3">
 <h3>Load Data</h3>
 <p>Load the data set.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">load</span> (
-  <span class="kw">url</span> (
-  <span class="st">&quot;https://d3c33hcgiwev3.cloudfront.net/_5db435f06000e694f6050a2d43fc7be3_gss.Rdata?Expires=1512604800&amp;Signature=RrxvDxYwCH6nUMgx8MmXy6iXon43J0xAiIbw1usFdnW77kLM97Rh7-dyF767sTbj9CID6JSqcbSDeh4QWxMeDhDnz4hfGh~LMM3BcxQhE8e3Lg5unWGpQTvx43tq4dhkaDx6ZPv78CJX1rOvxMPyR9pZtl2XDVwwHm0z6w-VWxs_&amp;Key-Pair-Id=APKAJLTNE6QMUY6HBC5A&quot;</span>
-  )
-  )</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">load</span> (<span class="kw">url</span> (<span class="st">&quot;https://d3c33hcgiwev3.cloudfront.net/_5db435f06000e694f6050a2d43fc7be3_gss.Rdata?Expires=1512777600&amp;Signature=fSqFvFcwuQ6KQCYc-sGFX42wym9hhfZTBDUWr8v0wvLpkDdt6rCL1zmoefY7U11h9Q5TVJBjQJyBUvqWvIfIaWkwJVa6euAUE3IqzcAmbL67gNcDOqaNomiXtjpRsPeWgfmIk-p7MFAMpx-WZrThP1AkzjFgst5uo03rm9K8r~o_&amp;Key-Pair-Id=APKAJLTNE6QMUY6HBC5A&quot;</span>))</code></pre></div>
 <hr />
 </div>
 </div>
@@ -208,12 +203,12 @@ list.of.packages[<span class="op">!</span>(list.of.packages <span class="op">%in
 </div>
 <div id="part-2-research-question" class="section level2">
 <h2>Part 2: Research Question</h2>
-<p>We will research if there is a statistically significant difference between income based on political views. This is of interest because political alignment is often indicative of fiduciary alignment, which should translate to earnings.</p>
+<p>We will research if there is a statistically significant difference between different poltical view’s family income. This is of interest because political alignment is indicative of personality, where conservatives tend to be more conscientiousness, which should be a predictor of higher earnings potential. <span class="citation">[@https://www.economist.com/blogs/democracyinamerica/2012/05/personality-and-polarisation]</span></p>
 <hr />
 </div>
 <div id="part-3-exploratory-data-analysis" class="section level2">
 <h2>Part 3: Exploratory Data Analysis</h2>
-<p>For our Exploratory Data Analysis, poltical views (variable “polviews”) will be our explantory variable, and income (“coninc”) will be our response variable.</p>
+<p>For our Exploratory Data Analysis, poltical views (variable “polviews”) will be our explantory variable, and “total family income in constant dollars” (variable “coninc”) will be our response variable.</p>
 <p>Let’s get a feel for our explanatory variable, “polviews,” by determining the unique values.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">unique</span> (gss<span class="op">$</span>polviews)</code></pre></div>
 <pre><code>## [1] &lt;NA&gt;                  Moderate              Slightly Conservative
@@ -222,8 +217,7 @@ list.of.packages[<span class="op">!</span>(list.of.packages <span class="op">%in
 ## 7 Levels: Extremely Liberal Liberal Slightly Liberal ... Extrmly Conservative</code></pre>
 <p>There are 7 unique political views, excluding NA values.</p>
 <p>Let’s visualize the distribution of income per poltical view by using box plots. Note we will exclude NAs.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(<span class="dt">data =</span> <span class="kw">subset</span>(gss,<span class="op">!</span><span class="kw">is.na</span>(polviews) <span class="op">&amp;</span>
-<span class="st">                       </span>coninc), <span class="kw">aes</span>(<span class="dt">x =</span> polviews, <span class="dt">y =</span> coninc)) <span class="op">+</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(<span class="dt">data =</span> <span class="kw">subset</span>(gss,<span class="op">!</span><span class="kw">is.na</span>(polviews) <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span><span class="kw">is.na</span>(coninc)), <span class="kw">aes</span>(<span class="dt">x =</span> polviews, <span class="dt">y =</span> coninc)) <span class="op">+</span>
 <span class="st">                       </span><span class="kw">geom_boxplot</span>(<span class="dt">fill =</span> <span class="st">&quot;#56B4E9&quot;</span>) <span class="op">+</span>
 <span class="st">                       </span><span class="kw">labs</span>(<span class="dt">title =</span> <span class="st">&quot;Income by Political Views&quot;</span>, <span class="dt">x =</span> <span class="st">&quot;Political View&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;Income&quot;</span>) <span class="op">+</span>
 <span class="st">                       </span><span class="co">#format y-scale</span>
@@ -440,78 +434,51 @@ Extremely Liberal
 </tr>
 </tbody>
 </table>
-<p>We do see that “Slightly Conservative” has the most variability, and also the highest mean and median income. Let’s now determine if there is any statistical income difference between the political views.</p>
-<p>Let’s also plot histograms to gauge normality</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(<span class="dt">data =</span> <span class="kw">subset</span>(gss, <span class="op">!</span><span class="kw">is.na</span>(polviews) <span class="op">&amp;</span>
-<span class="st">                       </span>coninc), <span class="kw">aes</span>(<span class="dt">x =</span> coninc)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_histogram</span>(<span class="dt">binwidth =</span> <span class="dv">10000</span>) <span class="op">+</span><span class="st"> </span>
-<span class="st">                       </span><span class="kw">facet_grid</span>( <span class="op">~</span><span class="st"> </span>polviews) <span class="op">+</span><span class="st"> </span><span class="kw">theme_bw</span>()</code></pre></div>
-<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>We do see that “Slightly Conservative” has the most variability, and also the highest mean and median income. Also, we see the “moderate” view has the most respondents. Let’s now determine if there is any statistical income difference between the political views.</p>
+<p>Let’s also gauge normality with a quantile-quantile plot.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">qplot</span>(<span class="dt">sample =</span> coninc, <span class="dt">data =</span> <span class="kw">subset</span>(gss, <span class="op">!</span><span class="kw">is.na</span>(polviews) <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span><span class="kw">is.na</span>(coninc)), <span class="dt">color=</span>polviews)</code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>We can see our income distribution is right-skewed for each political view. Since we are comparing more than two groups, and we want to mitigate the skewness impact, we will use a Kruskal-Wallis Test.</p>
 <hr />
 </div>
 <div id="part-4-inference" class="section level2">
 <h2>Part 4: Inference</h2>
-<p>We will use one-way ANOVA for our test of statistical significance.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">GSSAOV &lt;-
-<span class="st">  </span><span class="kw">aov</span>(coninc <span class="op">~</span><span class="st"> </span>polviews, <span class="dt">data =</span> <span class="kw">subset</span>(gss, <span class="op">!</span><span class="kw">is.na</span>(polviews) <span class="op">&amp;</span>
-<span class="st">  </span>coninc)) <span class="co">#Calculate ANOVA</span>
-  <span class="kw">summary</span>(GSSAOV)</code></pre></div>
-<pre><code>##                Df    Sum Sq   Mean Sq F value Pr(&gt;F)    
-## polviews        6 5.637e+11 9.395e+10    72.8 &lt;2e-16 ***
-## Residuals   43330 5.592e+13 1.290e+09                   
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
-<p>Also, we will evaulate the paired combinations of political views with Tukey multiple pairwise-comparisons</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">TukeyHSD</span>(GSSAOV)</code></pre></div>
-<pre><code>##   Tukey multiple comparisons of means
-##     95% family-wise confidence level
+<p>As mentioned, we will use a Kruskal-Wallis Test for statistical significance. Also, we will calculate pairwise comparisions with Wilcoxon Rank Sum Tests.</p>
+<p>First, let’s create a subset of the data to remove NA values.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gsssubset &lt;-<span class="st"> </span><span class="kw">subset</span>(gss,<span class="op">!</span><span class="kw">is.na</span>(polviews) <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span><span class="kw">is.na</span>(coninc))</code></pre></div>
+<p>Now, we will perform the Kruskal-Wallis test using a 0.05 significance level</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">kruskal.test</span>(coninc <span class="op">~</span><span class="st"> </span>polviews, <span class="dt">data =</span> gsssubset)</code></pre></div>
+<pre><code>## 
+##  Kruskal-Wallis rank sum test
 ## 
-## Fit: aov(formula = coninc ~ polviews, data = subset(gss, !is.na(polviews) &amp; coninc))
+## data:  coninc by polviews
+## Kruskal-Wallis chi-squared = 466.68, df = 6, p-value &lt; 2.2e-16</code></pre>
+<p>As the p-value is much less than the significance level 0.05, we can conclude that there are significant differences between poltical views when comparing family income.</p>
+<p>Next, we will evaulate the paired combinations of political views with Pairwise Wilcoxon Rank Sum Tests, using Bonferroni correction.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">pairwise.wilcox.test</span>(gsssubset<span class="op">$</span>coninc, gsssubset<span class="op">$</span>polviews, <span class="dt">p.adjust.method =</span> <span class="st">&quot;bonferroni&quot;</span>)</code></pre></div>
+<pre><code>## 
+##  Pairwise comparisons using Wilcoxon rank sum test 
 ## 
-## $polviews
-##                                                  diff         lwr
-## Liberal-Extremely Liberal                   5111.8047   1738.3401
-## Slightly Liberal-Extremely Liberal          6109.4554   2770.1648
-## Moderate-Extremely Liberal                  2953.2734   -188.4999
-## Slightly Conservative-Extremely Liberal    11560.1473   8275.9745
-## Conservative-Extremely Liberal             10590.6043   7278.1949
-## Extrmly Conservative-Extremely Liberal      3114.1004  -1116.4437
-## Slightly Liberal-Liberal                     997.6507  -1037.3977
-## Moderate-Liberal                           -2158.5312  -3850.0690
-## Slightly Conservative-Liberal               6448.3427   4505.0589
-## Conservative-Liberal                        5478.7997   3488.1674
-## Extrmly Conservative-Liberal               -1997.7043  -5297.4109
-## Moderate-Slightly Liberal                  -3156.1819  -4778.4946
-## Slightly Conservative-Slightly Liberal      5450.6920   3567.3571
-## Conservative-Slightly Liberal               4481.1490   2548.9959
-## Extrmly Conservative-Slightly Liberal      -2995.3550  -6260.1157
-## Slightly Conservative-Moderate              8606.8739   7101.2749
-## Conservative-Moderate                       7637.3309   6071.0955
-## Extrmly Conservative-Moderate                160.8269  -2901.6134
-## Conservative-Slightly Conservative          -969.5430  -2804.7937
-## Extrmly Conservative-Slightly Conservative -8446.0470 -11654.4098
-## Extrmly Conservative-Conservative          -7476.5040 -10713.7647
-##                                                   upr     p adj
-## Liberal-Extremely Liberal                   8485.2692 0.0001605
-## Slightly Liberal-Extremely Liberal          9448.7459 0.0000014
-## Moderate-Extremely Liberal                  6095.0468 0.0815302
-## Slightly Conservative-Extremely Liberal    14844.3202 0.0000000
-## Conservative-Extremely Liberal             13903.0138 0.0000000
-## Extrmly Conservative-Extremely Liberal      7344.6445 0.3117770
-## Slightly Liberal-Liberal                    3032.6991 0.7769970
-## Moderate-Liberal                            -466.9934 0.0031958
-## Slightly Conservative-Liberal               8391.6265 0.0000000
-## Conservative-Liberal                        7469.4319 0.0000000
-## Extrmly Conservative-Liberal                1302.0023 0.5582672
-## Moderate-Slightly Liberal                  -1533.8692 0.0000002
-## Slightly Conservative-Slightly Liberal      7334.0269 0.0000000
-## Conservative-Slightly Liberal               6413.3020 0.0000000
-## Extrmly Conservative-Slightly Liberal        269.4057 0.0969133
-## Slightly Conservative-Moderate             10112.4729 0.0000000
-## Conservative-Moderate                       9203.5663 0.0000000
-## Extrmly Conservative-Moderate               3223.2672 0.9999988
-## Conservative-Slightly Conservative           865.7077 0.7095292
-## Extrmly Conservative-Slightly Conservative -5237.6841 0.0000000
-## Extrmly Conservative-Conservative          -4239.2432 0.0000000</code></pre>
+## data:  gsssubset$coninc and gsssubset$polviews 
+## 
+##                       Extremely Liberal Liberal Slightly Liberal Moderate
+## Liberal               1.2e-06           -       -                -       
+## Slightly Liberal      1.1e-11           0.08582 -                -       
+## Moderate              1.5e-06           1.00000 6.7e-06          -       
+## Slightly Conservative &lt; 2e-16           &lt; 2e-16 &lt; 2e-16          &lt; 2e-16 
+## Conservative          &lt; 2e-16           &lt; 2e-16 2.7e-08          &lt; 2e-16 
+## Extrmly Conservative  0.28242           0.37118 0.00063          0.99836 
+##                       Slightly Conservative Conservative
+## Liberal               -                     -           
+## Slightly Liberal      -                     -           
+## Moderate              -                     -           
+## Slightly Conservative -                     -           
+## Conservative          0.10929               -           
+## Extrmly Conservative  &lt; 2e-16               3.9e-13     
+## 
+## P value adjustment method: bonferroni</code></pre>
+<p>We can see multiple indications of signifance between groups. What’s compelling is that significant differences don’t exist between “moderate” and “liberal,” or “moderate” and “conservative” but the two “slightly” based views do have signifance when compared to “moderate.”</p>
+<p>Furthermore, we do see significant differences between liberal and conservative alignments, but interestingly enough, not between the extreme ends of the spectrum.</p>
 </div>
 
 
