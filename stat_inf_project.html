@@ -450,7 +450,7 @@ Extremely Liberal
 <li>We also assume that the observations are independent of each other</li>
 <li>The measurement scale for the dependent variable should be at least ordinal</li>
 </ol>
-<p>Based on the GSS methodology, assumptions 1 &amp; 2 are met. our income dependent variable is on an ordinal scale, so we also meet assumption 3.</p>
+<p>Based on the GSS methodology, assumptions 1 &amp; 2 are met. Our income dependent variable is on an ordinal scale, so we also meet assumption 3.</p>
 <p>First, let’s create a subset of the data to remove NA values.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gsssubset &lt;-<span class="st"> </span><span class="kw">subset</span>(gss,<span class="op">!</span><span class="kw">is.na</span>(polviews) <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span><span class="kw">is.na</span>(coninc))</code></pre></div>
 <p>Now, we will perform the Kruskal-Wallis test using a 0.05 significance level</p>

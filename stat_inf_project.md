@@ -246,7 +246,7 @@ The assumptions for the Kruskal-Wallis Test are:
 2. We also assume that the observations are independent of each other
 3. The measurement scale for the dependent variable should be at least ordinal
 
-Based on the GSS methodology, assumptions 1 & 2 are met. our income dependent variable is on an ordinal scale, so we also meet assumption 3.
+Based on the GSS methodology, assumptions 1 & 2 are met. Our income dependent variable is on an ordinal scale, so we also meet assumption 3.
 
 First, let's create a subset of the data to remove NA values.
 
