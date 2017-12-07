@@ -11,7 +11,7 @@ output:
 
 ##Synopsis
 
-This analysis performs exploratory data anlaysis and statiscal inferance with a General Social Survey (GSS) dataset.
+This analysis performs exploratory data anlaysis and statistical inference with a General Social Survey (GSS) dataset prepared for use by Coursera students.
 
 ## Setup
 
