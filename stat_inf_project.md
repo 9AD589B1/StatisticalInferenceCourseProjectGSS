@@ -1,7 +1,7 @@
 ---
 title: "Statistical Inference with the GSS Data"
 author: "David Kochar"
-date: '2017-12-07'
+date: '2017-12-08'
 output: 
   html_document: 
     keep_md: true
@@ -58,7 +58,7 @@ Load the data set.
 
 
 ```r
-load (url ("https://d3c33hcgiwev3.cloudfront.net/_5db435f06000e694f6050a2d43fc7be3_gss.Rdata?Expires=1512777600&Signature=fSqFvFcwuQ6KQCYc-sGFX42wym9hhfZTBDUWr8v0wvLpkDdt6rCL1zmoefY7U11h9Q5TVJBjQJyBUvqWvIfIaWkwJVa6euAUE3IqzcAmbL67gNcDOqaNomiXtjpRsPeWgfmIk-p7MFAMpx-WZrThP1AkzjFgst5uo03rm9K8r~o_&Key-Pair-Id=APKAJLTNE6QMUY6HBC5A"))
+load (url ("https://d18ky98rnyall9.cloudfront.net/_5db435f06000e694f6050a2d43fc7be3_gss.Rdata?Expires=1512950400&Signature=e0MG-vaA6qgj2s~0UUc66fzMRzD1pF5VipKXuLmRpDdK63zaosyMDJnY-TX9WhLjBMH1W-WVGk1iDFO~inCMCbzx01u8ws~ze5fNvgE8Swxj-ejzhusOrgtDqYnoLQrpIEmQjUHduYKTCwHanFbdwIQcYiD79f3ktEUVYsIYRSI_&Key-Pair-Id=APKAJLTNE6QMUY6HBC5A"))
 ```
 
 
@@ -232,13 +232,23 @@ qplot(sample = coninc, data = subset(gss, !is.na(polviews) & !is.na(coninc)), co
 
 ![](figures/DataAnalysisProject_qqpot-1.png)<!-- -->
 
-We can see our income distribution is right-skewed for each political view. Since we are comparing more than two groups, and we want to mitigate the skewness impact, we will use a Kruskal-Wallis Test.
+We can see our income distribution is right-skewed for each political view. Since we are comparing more than two groups of a categorical explanatory variable, and we want to mitigate the skewness impact, we will use a Kruskal-Wallis Test.
 
 * * *
 
 ## Part 4: Inference
 
 As mentioned, we will use a Kruskal-Wallis Test for statistical significance. Also, we will calculate pairwise comparisions with Wilcoxon Rank Sum Tests.
+
+The Kruskal Wallis test is the non parametric alternative to the One Way ANOVA. Non parametric means that the test doesn't assume your data comes from a particular distribution. The H test is used when the assumptions for ANOVA aren't met (like the assumption of normality). It is sometimes called the one-way ANOVA on ranks, as the ranks of the data values are used in the test rather than the actual data points.
+The test determines whether the medians of two or more groups are different. Like most statistical tests, you calculate a test statistic and compare it to a distribution cut-off point. The test statistic used in this test is called the H statistic. The hypotheses for the test are:
+
+1. H0: population medians are equal.
+2. HA: population medians are not equal.
+
+[@http://www.statisticshowto.com/kruskal-wallis/]
+
+Since this is a non-parametric test and no population parameters are estimated, we won't construct confidence intervals.
 
 The assumptions for the Kruskal-Wallis Test are:
 
@@ -255,7 +265,7 @@ First, let's create a subset of the data to remove NA values.
 gsssubset <- subset(gss,!is.na(polviews) & !is.na(coninc))
 ```
 
-Now, we will perform the Kruskal-Wallis test using a 0.05 significance level
+Now, we will perform the Kruskal-Wallis test using a 0.05 significance level (which is the default)
 
 
 ```r
@@ -306,3 +316,5 @@ pairwise.wilcox.test(gsssubset$coninc, gsssubset$polviews, p.adjust.method = "bo
 We can see multiple indications of signifance between groups. What's compelling is that significant differences don't exist between "moderate" and "liberal," or "moderate" and "conservative" but the two "slightly" based views do have signifance when compared to "moderate."
 
 Furthermore, we do see significant differences between liberal and conservative alignments, but interestingly enough, not between the extreme ends of the spectrum.
+
+Additional research topics could include unpacking the political view further, with additional dimensions such as social and fiscal views within each political view. This would enable multi-variarate analysis to increase understanding of the between-group variance, e.g. an extremely conserative individual may not fiscally conservative, and this could explain why the median income is lower for said group.
