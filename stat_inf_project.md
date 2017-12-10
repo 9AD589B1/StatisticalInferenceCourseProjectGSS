@@ -1,7 +1,7 @@
 ---
 title: "Statistical Inference with the GSS Data"
 author: "David Kochar"
-date: '2017-12-08'
+date: '2017-12-10'
 output: 
   html_document: 
     keep_md: true
